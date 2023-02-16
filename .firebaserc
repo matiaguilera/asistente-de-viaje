@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "asistente-de-viaje": {
+      "hosting": {
+        "asistente-de-viaje": [
+          "asistente-de-viaje"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "asistente-de-viaje"
+  }
+}
