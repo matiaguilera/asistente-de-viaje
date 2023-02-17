@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from '@env/environment';
 import * as mapboxgl from 'mapbox-gl';
-import * as turf from '@turf/turf';
+// import { Map, LngLat, Marker, accessToken } from 'mapbox-gl'
+// import * as turf from '@turf/turf';
+// import booleanDisjoint from '@turf/boolean-disjoint';
+// import lineIntersect from '@turf/line-intersect'
+import { booleanDisjoint, lineIntersect, buffer } from '@turf/turf';
 
 @Component({
   selector: 'app-root',
@@ -97,11 +101,11 @@ export class AppComponent implements OnInit {
       };
       // const bbox = turf.bbox(geojson)
       // const polygon = turf.bboxPolygon(bbox)
-      const obstacle = turf.buffer(this.speedReducers as any, 0.01, {
+      const obstacle = buffer(this.speedReducers as any, 0.01, {
         units: 'kilometers',
       });
-      const clear = turf.booleanDisjoint(obstacle, geojson as any);
-      const intersect = turf.lineIntersect(obstacle, geojson as any);
+      const clear = booleanDisjoint(obstacle, geojson as any);
+      const intersect = lineIntersect(obstacle, geojson as any);
       if (this.map.getSource('route')) {
         let source: any = this.map.getSource('route');
         source.setData(geojson);
@@ -191,7 +195,7 @@ export class AppComponent implements OnInit {
         this.endPoint = coords;
       }
     });
-    let obstacle = turf.buffer(this.speedReducers as any, 0.04, {
+    let obstacle = buffer(this.speedReducers as any, 0.04, {
       units: 'kilometers',
     });
     this.map.on('load', () => {
