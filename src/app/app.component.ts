@@ -2,10 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { environment } from '@env/environment';
 import * as mapboxgl from 'mapbox-gl';
 // import { Map, LngLat, Marker, accessToken } from 'mapbox-gl'
-// import * as turf from '@turf/turf';
-// import booleanDisjoint from '@turf/boolean-disjoint';
-// import lineIntersect from '@turf/line-intersect'
-import { booleanDisjoint, lineIntersect, buffer } from '@turf/turf';
+import booleanDisjoint from '@turf/boolean-disjoint';
+import lineIntersect from '@turf/line-intersect';
+import buffer from '@turf/buffer';
 
 @Component({
   selector: 'app-root',
