@@ -64,10 +64,11 @@ export class AppComponent implements OnInit {
   reports: any = [];
   mapbox = mapboxgl as typeof mapboxgl;
   map: mapboxgl.Map;
-  style = 'mapbox://styles/mapbox/dark-v10';
+  style = 'mapbox://styles/mapbox/light-v11';
   lat = -25.4938;
   lng = -54.6541;
   zoom = 15;
+  showMenu = false;
   async getDirections(
     originPoint: number[],
     destinyPoint: number[],
@@ -159,6 +160,10 @@ export class AppComponent implements OnInit {
         },
       ];
     });
+  }
+
+  menuClickHandler() {
+    this.showMenu = !this.showMenu;
   }
 
   constructor() {

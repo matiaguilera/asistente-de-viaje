@@ -1,6 +1,5 @@
 .sidebar {
   scrollbar-color: dark;
-  color: #fff;
   padding: 6px 12px;
   font-family: monospace;
   position: absolute;
@@ -8,4 +7,8 @@
   right: 0;
   margin: 12px;
   border-radius: 4px;
+}
+
+.monospace {
+  font-family: monospace;
 }
