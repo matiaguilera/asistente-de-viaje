@@ -13,8 +13,14 @@
         <app-origin-icon></app-origin-icon>
         <div class="flex w-full items-center rounded-md bg-slate-100 py-1 px-2">
           <input
+            (input)="inputHandler()"
             placeholder="Selecciona el punto de salida"
             type="text"
+            [value]="
+              startPoint?.length > 0
+                ? startPoint[0].toFixed(4) + ', ' + startPoint[1].toFixed(4)
+                : ''
+            "
             class="w-full bg-slate-100 focus:outline-none text-sm"
           />
           <button>
@@ -26,6 +32,12 @@
         <app-destiny-icon></app-destiny-icon>
         <div class="flex w-full items-center rounded-md bg-slate-100 py-1 px-2">
           <input
+            (input)="inputHandler()"
+            [value]="
+              endPoint?.length > 0
+                ? endPoint[0].toFixed(4) + ', ' + endPoint[1].toFixed(4)
+                : ''
+            "
             placeholder="Selecciona el punto de destino"
             type="text"
             class="w-full bg-slate-100 focus:outline-none text-sm"
@@ -36,7 +48,7 @@
         </div>
       </div>
     </div>
-    <button class="mr-1 ml-6">
+    <button (click)="swapHandler()" class="mr-1 ml-6">
       <app-swap-icon></app-swap-icon>
     </button>
   </div>

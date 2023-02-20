@@ -5,6 +5,7 @@ import * as mapboxgl from 'mapbox-gl';
 import booleanDisjoint from '@turf/boolean-disjoint';
 import lineIntersect from '@turf/line-intersect';
 import buffer from '@turf/buffer';
+import { DirectionService } from './services/direction.service';
 
 @Component({
   selector: 'app-root',
@@ -69,104 +70,93 @@ export class AppComponent implements OnInit {
   lng = -54.6541;
   zoom = 15;
   showMenu = false;
-  async getDirections(
-    originPoint: number[],
-    destinyPoint: number[],
-    accessToken: string
-  ) {
-    try {
-      let response = await fetch(
-        `https://api.mapbox.com/directions/v5/mapbox/driving/${originPoint[0]},${originPoint[1]};${destinyPoint[0]},${destinyPoint[1]}?geometries=geojson&access_token=${accessToken}`,
-        { method: 'GET' }
-      );
-      return await response.json();
-    } catch (err) {
-      console.log(err);
-    }
+  swapHandler() {
+    [this.startPoint, this.endPoint] = [this.endPoint, this.startPoint];
+    this.inputHandler();
   }
-  clickHandler() {
-    this.getDirections(
-      this.startPoint,
-      this.endPoint,
-      environment.mapBoxToken
-    ).then((data) => {
-      const route = data.routes[0].geometry.coordinates;
-      const geojson = {
-        type: 'Feature',
-        properties: {},
-        geometry: {
-          type: 'LineString',
-          coordinates: route,
-        },
-      };
-      // const bbox = turf.bbox(geojson)
-      // const polygon = turf.bboxPolygon(bbox)
-      const obstacle = buffer(this.speedReducers as any, 0.01, {
-        units: 'kilometers',
-      });
-      const clear = booleanDisjoint(obstacle, geojson as any);
-      const intersect = lineIntersect(obstacle, geojson as any);
-      if (this.map.getSource('route')) {
-        let source: any = this.map.getSource('route');
-        source.setData(geojson);
-        // map.current.getSource('box').setData(polygon)
-      } else {
-        this.map.addLayer({
-          id: 'route',
-          type: 'line',
-          source: {
-            type: 'geojson',
-            data: geojson as any,
-          },
-          layout: {
-            'line-join': 'round',
-            'line-cap': 'round',
-          },
-          paint: {
-            'line-color': '#e81e39',
-            'line-width': 5,
-            'line-opacity': 0.75,
-          },
+  inputHandler() {
+    if (this.startPoint && this.endPoint) {
+      this.directionService
+        .getDirections(this.startPoint, this.endPoint, environment.mapBoxToken)
+        .then((data) => {
+          const route = data.routes[0].geometry.coordinates;
+          const geojson = {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'LineString',
+              coordinates: route,
+            },
+          };
+          // const bbox = turf.bbox(geojson)
+          // const polygon = turf.bboxPolygon(bbox)
+          const obstacle = buffer(this.speedReducers as any, 0.01, {
+            units: 'kilometers',
+          });
+          const clear = booleanDisjoint(obstacle, geojson as any);
+          const intersect = lineIntersect(obstacle, geojson as any);
+          if (this.map.getSource('route')) {
+            let source: any = this.map.getSource('route');
+            source.setData(geojson);
+            // map.current.getSource('box').setData(polygon)
+          } else {
+            this.map.addLayer({
+              id: 'route',
+              type: 'line',
+              source: {
+                type: 'geojson',
+                data: geojson as any,
+              },
+              layout: {
+                'line-join': 'round',
+                'line-cap': 'round',
+              },
+              paint: {
+                'line-color': '#e81e39',
+                'line-width': 5,
+                'line-opacity': 0.75,
+              },
+            });
+            // map.current.addLayer({
+            //   id: 'box',
+            //   type: 'fill',
+            //   source: {
+            //     type: 'geojson',
+            //     data: polygon,
+            //   },
+            //   layout: {},
+            //   paint: {
+            //     'fill-color': '#FFC300',
+            //     'fill-opacity': 0.5,
+            //     'fill-outline-color': '#FFC300',
+            //   },
+            // })
+          }
+          this.counter += 1;
+          let duration = (data.routes[0].duration / 60).toFixed(0);
+          let collisions: null | number;
+          if (clear) {
+            collisions = null;
+          } else {
+            collisions = intersect.features.length / 2;
+          }
+          this.reports = [
+            ...this.reports,
+            {
+              id: this.counter,
+              duration,
+              collisions,
+            },
+          ];
         });
-        // map.current.addLayer({
-        //   id: 'box',
-        //   type: 'fill',
-        //   source: {
-        //     type: 'geojson',
-        //     data: polygon,
-        //   },
-        //   layout: {},
-        //   paint: {
-        //     'fill-color': '#FFC300',
-        //     'fill-opacity': 0.5,
-        //     'fill-outline-color': '#FFC300',
-        //   },
-        // })
-      }
-      this.counter += 1;
-      let duration = (data.routes[0].duration / 60).toFixed(0);
-      let collisions: null | number;
-      if (clear) {
-        collisions = null;
-      } else {
-        collisions = intersect.features.length / 2;
-      }
-      this.reports = [
-        ...this.reports,
-        {
-          id: this.counter,
-          duration,
-          collisions,
-        },
-      ];
-    });
+    }
   }
 
   menuClickHandler() {
     this.showMenu = !this.showMenu;
   }
 
-  constructor() {
+  constructor(private directionService: DirectionService) {
     this.mapbox.accessToken = environment.mapBoxToken;
   }
 
@@ -198,6 +188,7 @@ export class AppComponent implements OnInit {
       } else {
         this.endPoint = coords;
       }
+      this.inputHandler();
     });
     let obstacle = buffer(this.speedReducers as any, 0.04, {
       units: 'kilometers',
