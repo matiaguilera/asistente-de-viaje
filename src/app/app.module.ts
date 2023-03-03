@@ -7,20 +7,18 @@ import { environment } from '../environments/environment';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { provideStorage, getStorage } from '@angular/fire/storage';
-import { MenuIconComponent } from './components/icons/menu-icon/menu-icon.component';
-import { OriginIconComponent } from './components/icons/origin-icon/origin-icon.component';
-import { SearchIconComponent } from './components/icons/search-icon/search-icon.component';
-import { DestinyIconComponent } from './components/icons/destiny-icon/destiny-icon.component';
-import { SwapIconComponent } from './components/icons/swap-icon/swap-icon.component';
-import { LeftIconComponent } from './components/icons/left-icon/left-icon.component';
-import { LomadaIconComponent } from './components/icons/lomada-icon/lomada-icon.component';
-import { SignalIconComponent } from './components/icons/signal-icon/signal-icon.component';
-import { BookIconComponent } from './components/icons/book-icon/book-icon.component';
-import { EditIconComponent } from './components/icons/edit-icon/edit-icon.component';
-import { GearIconComponent } from './components/icons/gear-icon/gear-icon.component';
+import { RouteFinderComponent } from './components/route-finder.component';
+import { MenuComponent } from './components/menu.component';
+import { MapComponent } from './components/map.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
-  declarations: [AppComponent, MenuIconComponent, OriginIconComponent, SearchIconComponent, DestinyIconComponent, SwapIconComponent, LeftIconComponent, LomadaIconComponent, SignalIconComponent, BookIconComponent, EditIconComponent, GearIconComponent],
+  declarations: [
+    AppComponent,
+    RouteFinderComponent,
+    MenuComponent,
+    MapComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -28,6 +26,7 @@ import { GearIconComponent } from './components/icons/gear-icon/gear-icon.compon
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     provideStorage(() => getStorage()),
+    FontAwesomeModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
