@@ -10,6 +10,7 @@ import { provideStorage, getStorage } from '@angular/fire/storage';
 import { RouteFinderComponent } from './components/route-finder.component';
 import { MenuComponent } from './components/menu.component';
 import { MapComponent } from './components/map.component';
+import { ContributeFormComponent } from './components/contribute-form.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
@@ -18,6 +19,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     RouteFinderComponent,
     MenuComponent,
     MapComponent,
+    ContributeFormComponent,
   ],
   imports: [
     BrowserModule,
