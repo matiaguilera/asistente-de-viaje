@@ -10,17 +10,36 @@ import { speedReducers } from './speed-reducers';
 
 @Component({
   selector: 'app-root',
-  template: `<app-route-finder></app-route-finder>
+  template: `<app-route-finder
+      [startPoint]="startPoint"
+      [endPoint]="endPoint"
+      (menuClick)="menuClickHandler()"
+    />
     <ng-container *ngIf="showMenu">
-      <app-menu></app-menu>
+      <app-menu
+        (menuClick)="menuClickHandler()"
+        (editClick)="editClickHandler()"
+      />
     </ng-container>
-    <app-map (mapClick)="onMapClick($event)"></app-map>`,
+    <ng-container *ngIf="showLogin">
+      <app-menu (menuClick)="menuClickHandler()"/>
+    </ng-container>
+    <ng-container *ngIf="showEditForm">
+      <app-contribute-form (cancelClick)="editClickHandler()" />
+    </ng-container>
+    <app-map
+      [startPoint]="startPoint"
+      [endPoint]="endPoint"
+      (mapClick)="onMapClick($event)"
+    />`,
 })
 export class AppComponent {
   isFirst = true;
-  startPoint: any = [];
-  endPoint: any = [];
-  showMenu = true;
+  startPoint: any;
+  endPoint: any;
+  showMenu = false;
+  showLogin = false;
+  showEditForm = false;
   onMapClick(event: MapMouseEvent & EventData) {
     const coords = Object.keys(event.lngLat).map(
       (key) => event.lngLat[key as keyof mapboxgl.LngLat]
@@ -34,6 +53,9 @@ export class AppComponent {
   }
   menuClickHandler() {
     this.showMenu = !this.showMenu;
+  }
+  editClickHandler() {
+    this.showEditForm = !this.showEditForm;
   }
   constructor() {}
 }

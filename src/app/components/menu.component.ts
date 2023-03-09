@@ -59,7 +59,10 @@ import {
         ></fa-icon>
         Leyes vigentes
       </button>
-      <button class="group flex w-fit items-center gap-2 hover:text-gray-900">
+      <button
+        (click)="editClickHandler()"
+        class="group flex w-fit items-center gap-2 hover:text-gray-900"
+      >
         <fa-icon
           [icon]="faPenToSquare"
           [fixedWidth]="true"
@@ -79,6 +82,7 @@ import {
 })
 export class MenuComponent {
   @Output() menuClick: EventEmitter<void> = new EventEmitter();
+  @Output() editClick: EventEmitter<void> = new EventEmitter();
 
   faAnglesLeft = faAnglesLeft;
   faMound = faMound;
@@ -88,5 +92,8 @@ export class MenuComponent {
   faGear = faGear;
   menuClickHandler() {
     this.menuClick.emit();
+  }
+  editClickHandler() {
+    this.editClick.emit();
   }
 }
