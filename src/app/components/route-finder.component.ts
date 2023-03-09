@@ -1,4 +1,11 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 import { DirectionService } from '../services/direction.service';
 import { GeocodingService } from '../services/geocoding.service';
 import { environment } from '@env/environment';
@@ -114,7 +121,11 @@ import { faCircleDot } from '@fortawesome/free-regular-svg-icons';
     </div>
   </div> `,
 })
-export class RouteFinderComponent {
+export class RouteFinderComponent implements OnChanges {
+  @Output() menuClick: EventEmitter<void> = new EventEmitter();
+  @Input() startPoint: any = [];
+  @Input() endPoint: any = [];
+
   faBars = faBars;
   faLocationDot = faLocationDot;
   faCircleDot = faCircleDot;
@@ -124,8 +135,6 @@ export class RouteFinderComponent {
 
   isFirst = true;
   counter = 0;
-  startPoint: any = [];
-  endPoint: any = [];
   originValue =
     this.startPoint?.length > 0
       ? this.startPoint[0].toFixed(4) + ', ' + this.startPoint[1].toFixed(4)
@@ -134,6 +143,11 @@ export class RouteFinderComponent {
     this.endPoint?.length > 0
       ? this.endPoint[0].toFixed(4) + ', ' + this.endPoint[1].toFixed(4)
       : '';
+
+  menuClickHandler() {
+    this.menuClick.emit();
+  }
+
   swapHandler() {
     [this.startPoint, this.endPoint] = [this.endPoint, this.startPoint];
     // this.inputHandler();
@@ -162,9 +176,19 @@ export class RouteFinderComponent {
     this.destinyValue = '';
   }
 
-  menuClickHandler() {
-    // this.showMenu = !this.showMenu;
-    //raise event here
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['startPoint']) {
+      this.originValue =
+        changes['startPoint'].currentValue?.length > 0
+          ? this.startPoint[0].toFixed(4) + ', ' + this.startPoint[1].toFixed(4)
+          : '';
+    }
+    if (changes['endPoint']) {
+      this.destinyValue =
+        changes['endPoint'].currentValue?.length > 0
+          ? this.endPoint[0].toFixed(4) + ', ' + this.endPoint[1].toFixed(4)
+          : '';
+    }
   }
 
   constructor(

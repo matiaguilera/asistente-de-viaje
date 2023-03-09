@@ -1,4 +1,11 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  SimpleChanges,
+  OnChanges,
+} from '@angular/core';
 import { environment } from '@env/environment';
 import * as mapboxgl from 'mapbox-gl';
 import booleanDisjoint from '@turf/boolean-disjoint';
@@ -16,7 +23,7 @@ import { DirectionService } from '../services/direction.service';
     </div>
     <div id="map" class="h-screen w-screen"></div>`,
 })
-export class MapComponent {
+export class MapComponent implements OnChanges {
   @Input() startPoint: number[];
   @Input() endPoint: number[];
   @Input() counter: number;
@@ -32,7 +39,7 @@ export class MapComponent {
   lat = -25.4938;
   lng = -54.6541;
   zoom = 15;
-  inputHandler() {
+  drawRoute() {
     if (this.startPoint && this.endPoint) {
       this.directionService
         .getDirections(this.startPoint, this.endPoint, environment.mapBoxToken)
@@ -46,17 +53,9 @@ export class MapComponent {
               coordinates: route,
             },
           };
-          // const bbox = turf.bbox(geojson)
-          // const polygon = turf.bboxPolygon(bbox)
-          const obstacle = buffer(speedReducers as any, 0.01, {
-            units: 'kilometers',
-          });
-          const clear = booleanDisjoint(obstacle, geojson as any);
-          const intersect = lineIntersect(obstacle, geojson as any);
           if (this.map.getSource('route')) {
             let source: any = this.map.getSource('route');
             source.setData(geojson);
-            // map.current.getSource('box').setData(polygon)
           } else {
             this.map.addLayer({
               id: 'route',
@@ -75,30 +74,13 @@ export class MapComponent {
                 'line-opacity': 0.75,
               },
             });
-            // map.current.addLayer({
-            //   id: 'box',
-            //   type: 'fill',
-            //   source: {
-            //     type: 'geojson',
-            //     data: polygon,
-            //   },
-            //   layout: {},
-            //   paint: {
-            //     'fill-color': '#FFC300',
-            //     'fill-opacity': 0.5,
-            //     'fill-outline-color': '#FFC300',
-            //   },
-            // })
-          }
-          this.counter += 1;
-          let duration = (data.routes[0].duration / 60).toFixed(0);
-          let collisions: null | number;
-          if (clear) {
-            collisions = null;
-          } else {
-            collisions = intersect.features.length / 2;
           }
         });
+    }
+  }
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['endPoint']) {
+      this.drawRoute();
     }
   }
   ngOnInit() {
@@ -121,7 +103,6 @@ export class MapComponent {
     });
     this.map.on('click', (event) => {
       this.mapClick.emit(event);
-      this.inputHandler();
     });
     let obstacle = buffer(speedReducers as any, 0.04, {
       units: 'kilometers',
